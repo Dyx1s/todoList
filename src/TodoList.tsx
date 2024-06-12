@@ -17,26 +17,35 @@ interface TodoListProps {
 
 const TodoList: FC<TodoListProps> = ({ title, tasks, removeTask, changeFilter, addTask }): ReactElement => {
   const [newTaskTitle, setNewTaskTitle] = useState<string>("")
-  
+
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTaskTitle(e.currentTarget.value)
+  }
+  const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTask(newTaskTitle);
+      setNewTaskTitle("");
+    }
+  }
+  const onClickButtonAdd = () => {
+      addTask(newTaskTitle);
+      setNewTaskTitle("")
+  }
+  const onAllClickHandler = () => changeFilter("all");
+  const onActiveClickHandler = () => changeFilter("active");
+  const onCompletedClickHandler = () => changeFilter("completed")
+
   return (
     <div>
       <h3>{title}</h3>
       <div>
       <input 
         value={newTaskTitle} 
-        onChange={(e) => setNewTaskTitle(e.currentTarget.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            addTask(newTaskTitle);
-            setNewTaskTitle("");
-          }
-        }}
+        onChange={onChangeHandler}
+        onKeyDown={onKeyDownHandler}
         type="text" />
-        <button onClick={() => {
-            addTask(newTaskTitle);
-            setNewTaskTitle("")
-          }}>Add</button>
+        <button onClick={ onClickButtonAdd }>+</button>
         <ul>
           {tasks.map(({ id, title, isDone }) => (
             <li key={id}>
@@ -47,12 +56,13 @@ const TodoList: FC<TodoListProps> = ({ title, tasks, removeTask, changeFilter, a
               <span >{title}</span>
               <button onClick={() => removeTask(id)}>X</button>
             </li>
-          ))}
+            ))
+          }
         </ul>
         <div>
-          <button onClick={() => changeFilter('all')}>All</button>
-          <button onClick={() => changeFilter('active')}>Active</button>
-          <button onClick={() => changeFilter('completed')}>Completed</button>
+          <button onClick={onAllClickHandler}>All</button>
+          <button onClick={onActiveClickHandler}>Active</button>
+          <button onClick={onCompletedClickHandler}>Completed</button>
         </div>
       </div>
     </div>
